@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order System</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#111;
+  color:white;
+  padding:20px;
+}
+
+section{
+  margin:20px 0;
+  padding:20px;
+  background:#222;
+  border-radius:10px;
+}
+
+button{
+  padding:10px;
+  background:#00ff99;
+  border:none;
+  cursor:pointer;
+}
+
+input,select{
+  padding:10px;
+  margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🛒 AgroMarket Order System</h1>
+
+<!-- CART SECTION -->
+<section>
+<h2>Cart</h2>
+<ul id="cartList"></ul>
+
+<h3>Total: <span id="total">0</span> RWF</h3>
+
+<select id="network">
+  <option>MTN MoMo</option>
+  <option>Airtel Money</option>
+</select>
+
+<br>
+
+<input id="phone" placeholder="Phone number">
+
+<br><br>
+
+<button onclick="payNow()">Pay Now</button>
+
+<p id="msg"></p>
+</section>
+
+<!-- ORDER HISTORY -->
+<section>
+<h2>Order History</h2>
+<ul id="orderList"></ul>
+</section>
+
+<script>
+
+// 🛒 CART DATA
+let cart = [];
+let prices = {
+  Onion: 500,
+  Maize: 700,
+  Tomato: 600
+};
+
+// 📦 ORDERS
+let orders = [];
+
+// 👉 ADD SAMPLE ITEMS (for testing)
+cart = ["Onion", "Maize"];
+updateCart();
+
+// 🧮 UPDATE CART
+function updateCart(){
+  let list = document.getElementById("cartList");
+  let total = 0;
+
+  list.innerHTML = "";
+
+  cart.forEach(item=>{
+    list.innerHTML += `<li>${item} - ${prices[item]} RWF</li>`;
+    total += prices[item];
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+// 💳 PAYMENT + SAVE ORDER
+function payNow(){
+
+  let phone = document.getElementById("phone").value;
+  let network = document.getElementById("network").value;
+  let total = document.getElementById("total").innerText;
+
+  if(phone === ""){
+    document.getElementById("msg").innerText = "Enter phone number ❌";
+    return;
+  }
+
+  if(cart.length === 0){
+    document.getElementById("msg").innerText = "Cart is empty ❌";
+    return;
+  }
+
+  document.getElementById("msg").innerText =
+  "Processing "+network+" payment of "+total+" RWF...";
+
+  setTimeout(()=>{
+
+    document.getElementById("msg").innerText =
+    "Payment successful via "+network+" ✅";
+
+    // 💾 SAVE ORDER
+    saveOrder(cart, total);
+
+    // reset cart
+    cart = [];
+    updateCart();
+
+  },2000);
+}
+
+// 💾 SAVE ORDER
+function saveOrder(cartItems, total){
+
+  let order = {
+    items: [...cartItems],
+    total: total,
+    date: new Date().toLocaleString()
+  };
+
+  orders.push(order);
+  showOrders();
+}
+
+// 📦 SHOW ORDER HISTORY
+function showOrders(){
+
+  let list = document.getElementById("orderList");
+  list.innerHTML = "";
+
+  orders.forEach((o,i)=>{
+
+    list.innerHTML += `
+      <li>
+        <b>Order ${i+1}</b><br>
+        Items: ${o.items.join(", ")}<br>
+        Total: ${o.total} RWF<br>
+        Date: ${o.date}
+        <hr>
+      </li>
+    `;
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>

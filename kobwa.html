@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#111;
+  color:white;
+  margin:0;
+}
+
+header{
+  background:black;
+  padding:15px;
+  text-align:center;
+}
+
+section{
+  padding:20px;
+}
+
+.card{
+  background:#222;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+}
+
+button{
+  padding:8px;
+  background:#00ff99;
+  border:none;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🧑‍💼 Admin Dashboard</h2>
+</header>
+
+<!-- STATS -->
+<section>
+<h3>📊 Statistics</h3>
+<p>Orders: <span id="orderCount">0</span></p>
+<p>Products: <span id="productCount">0</span></p>
+<p>Users: <span id="userCount">0</span></p>
+</section>
+
+<!-- PRODUCTS -->
+<section>
+<h3>📦 Products</h3>
+<div id="productList"></div>
+</section>
+
+<!-- ORDERS -->
+<section>
+<h3>🛒 Orders</h3>
+<div id="orderList"></div>
+</section>
+
+<!-- USERS -->
+<section>
+<h3>👤 Users</h3>
+<div id="userList"></div>
+</section>
+
+<script>
+
+// 🧠 SAMPLE DATA (demo)
+let products = [
+  {name:"Onion", price:500},
+  {name:"Maize", price:700},
+  {name:"Tomato", price:600}
+];
+
+let users = [
+  {name:"jean uwimana"},
+  {name:"marie cloudine"},
+   {name:"pierre habimana"},
+    {name:"agnes mukamana"},
+     {name:"eric nshimiyimana"},
+     
+    
+];
+
+let orders = [
+  {id:1, items:["Onion","Maize"], total:1200},
+  {id:2, items:["Tomato"], total:600}
+];
+
+// 📊 LOAD DASHBOARD
+function loadDashboard(){
+
+  // stats
+  document.getElementById("orderCount").innerText = orders.length;
+  document.getElementById("productCount").innerText = products.length;
+  document.getElementById("userCount").innerText = users.length;
+
+  // PRODUCTS
+  let p = document.getElementById("productList");
+  p.innerHTML = "";
+
+  products.forEach((x,i)=>{
+    p.innerHTML += `
+      <div class="card">
+        ${x.name} - ${x.price} RWF
+        <button onclick="deleteProduct(${i})">Delete</button>
+      </div>
+    `;
+  });
+
+  // ORDERS
+  let o = document.getElementById("orderList");
+  o.innerHTML = "";
+
+  orders.forEach((x,i)=>{
+    o.innerHTML += `
+      <div class="card">
+        Order ${x.id}<br>
+        Items: ${x.items.join(", ")}<br>
+        Total: ${x.total} RWF
+        <br>
+        <button onclick="deleteOrder(${i})">Delete</button>
+      </div>
+    `;
+  });
+
+  // USERS
+  let u = document.getElementById("userList");
+  u.innerHTML = "";
+
+  users.forEach((x,i)=>{
+    u.innerHTML += `
+      <div class="card">
+        ${x.name}
+        <button onclick="deleteUser(${i})">Remove</button>
+      </div>
+    `;
+  });
+
+}
+
+// ❌ DELETE FUNCTIONS
+function deleteProduct(i){
+  products.splice(i,1);
+  loadDashboard();
+}
+
+function deleteOrder(i){
+  orders.splice(i,1);
+  loadDashboard();
+}
+
+function deleteUser(i){
+  users.splice(i,1);
+  loadDashboard();
+}
+
+// 🚀 INIT
+loadDashboard();
+
+</script>
+
+</body>
+</html>

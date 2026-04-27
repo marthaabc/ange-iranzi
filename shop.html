@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shop - AgroMarket</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+  background:#111;
+  color:white;
+}
+
+/* HEADER */
+header{
+  background:black;
+  padding:15px;
+  text-align:center;
+}
+
+/* SEARCH BAR */
+.search-box{
+  padding:20px;
+  text-align:center;
+}
+
+.search-box input{
+  padding:10px;
+  width:250px;
+  border-radius:20px;
+  border:none;
+}
+
+.search-box select{
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  margin-left:10px;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  padding:20px;
+}
+
+/* CARD */
+.card{
+  background:white;
+  color:black;
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.card h3{
+  margin:5px 0;
+}
+
+button{
+  background:#00ff99;
+  border:none;
+  padding:10px;
+  width:100%;
+  margin-top:5px;
+  cursor:pointer;
+  border-radius:5px;
+}
+
+/* CART */
+#cartBox{
+  background:#222;
+  padding:20px;
+}
+
+#cartList li{
+  margin:5px 0;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr;}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🛒 AgroMarket Shop</h2>
+</header>
+
+<!-- SEARCH -->
+<div class="search-box">
+  <input type="text" id="search" placeholder="Search product..." onkeyup="filterProducts()">
+
+  <select id="priceFilter" onchange="filterProducts()">
+    <option value="all">All Prices</option>
+    <option value="500">Below 500</option>
+    <option value="1000">Below 1000</option>
+    <option value="2000">Below 2000</option>
+  </select>
+</div>
+
+<!-- PRODUCTS -->
+<div class="grid" id="productGrid"></div>
+
+<!-- CART -->
+<section id="cartBox">
+  <h2>🛒 Cart</h2>
+  <ul id="cartList"></ul>
+  <h3>Total: <span id="total">0</span> RWF</h3>
+</section>
+
+<script>
+
+/* PRODUCTS DATA */
+let products = [
+  {name:"Sweet Potatoes", price:600, img:"ss.jpg"},
+  {name:"Mangoes", price:2000, img:"mm.jpg"},
+  {name:"Avocado", price:500, img:"aa.jpg"},
+  {name:"Eggs", price:900, img:"uu.jpg"},
+  {name:"Carrot", price:1200, img:"cc.jfif"},
+  {name:"Cassava", price:600, img:"rr.jfif"},
+  {name:"Irish Potatoes", price:800, img:"tt.jfif"},
+  {name:"Watermelon", price:3000, img:"vv.jpg"},
+  {name:"Apple", price:1000, img:"rt.jfif"},
+  {name:"Banana", price:350, img:"bb.jfif"},
+  {name:"Beans", price:1200, img:"bn.jpg"}
+];
+
+let cart=[];
+
+/* LOAD PRODUCTS */
+function loadProducts(list){
+  let grid = document.getElementById("productGrid");
+  grid.innerHTML="";
+
+  list.forEach(p=>{
+    grid.innerHTML+=`
+      <div class="card">
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <p>${p.price} RWF/kg</p>
+        <button onclick="addToCart('${p.name}',${p.price})">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+/* FILTER */
+function filterProducts(){
+  let search = document.getElementById("search").value.toLowerCase();
+  let price = document.getElementById("priceFilter").value;
+
+  let filtered = products.filter(p=>{
+    let matchName = p.name.toLowerCase().includes(search);
+    let matchPrice = (price==="all") || (p.price <= price);
+    return matchName && matchPrice;
+  });
+
+  loadProducts(filtered);
+}
+
+/* CART */
+function addToCart(name,price){
+  cart.push({name,price});
+  updateCart();
+}
+
+function updateCart(){
+  let list=document.getElementById("cartList");
+  let total=0;
+
+  list.innerHTML="";
+
+  cart.forEach(item=>{
+    list.innerHTML+=`<li>${item.name} - ${item.price} RWF</li>`;
+    total+=item.price;
+  });
+
+  document.getElementById("total").innerText=total;
+}
+
+/* INIT */
+loadProducts(products);
+
+</script>
+
+</body>
+</html>

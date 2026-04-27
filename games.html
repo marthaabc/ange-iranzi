@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Farming Game</title>
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(#87CEEB, #228B22);
+    text-align:center;
+    color:white;
+}
+
+#gameArea {
+    width:600px;
+    height:400px;
+    background:#6B8E23;
+    margin:20px auto;
+    position:relative;
+    border:4px solid #fff;
+    display:none;
+    overflow:hidden;
+}
+
+.crop {
+    position:absolute;
+    cursor:pointer;
+    font-size:30px;
+}
+
+#farmer {
+    position:absolute;
+    font-size:35px;
+    left:280px;
+    top:180px;
+}
+
+button, select {
+    padding:10px;
+    margin:5px;
+    font-size:16px;
+}
+
+#gameOver {
+    font-size:30px;
+    color:yellow;
+    display:none;
+}
+</style>
+</head>
+<body>
+
+<h1>🌾 Farming Game Pro</h1>
+
+<div id="score">Score: 0</div>
+<div id="money">Money: 0 💰</div>
+<div id="timer">Time: 30</div>
+
+<select id="level">
+    <option value="1000">Easy</option>
+    <option value="700">Medium</option>
+    <option value="400">Hard</option>
+</select>
+
+<br>
+<button id="startBtn">START</button>
+<button id="restartBtn" style="display:none;">RESTART</button>
+
+<div id="gameArea">
+    <div id="farmer">🧑‍🌾</div>
+</div>
+
+<div id="gameOver">GAME OVER</div>
+
+<audio id="bgMusic" loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<script>
+let gameArea = document.getElementById("gameArea");
+let startBtn = document.getElementById("startBtn");
+let restartBtn = document.getElementById("restartBtn");
+let farmer = document.getElementById("farmer");
+
+let score = 0;
+let money = 0;
+let time = 30;
+let gameRunning = false;
+
+let crops = [
+    {icon:"🌽", value:5},
+    {icon:"🫘", value:6},
+    {icon:"🥬", value:4},
+    {icon:"🥭", value:10},
+    {icon:"🧅", value:3},
+    {icon:"🥔", value:5},
+    {icon:"🌿", value:7}
+];
+
+let spawnSpeed;
+let spawnInterval;
+
+// START GAME
+startBtn.onclick = () => {
+    gameRunning = true;
+    gameArea.style.display = "block";
+    startBtn.style.display = "none";
+    document.getElementById("bgMusic").play();
+
+    spawnSpeed = document.getElementById("level").value;
+
+    startSpawning();
+    startTimer();
+};
+
+// TIMER
+function startTimer(){
+    let countdown = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = "Time: " + time;
+
+        if(time <= 0){
+            clearInterval(countdown);
+            gameRunning = false;
+            document.getElementById("gameOver").style.display = "block";
+            restartBtn.style.display = "inline";
+            clearInterval(spawnInterval);
+        }
+    }, 1000);
+}
+
+// SPAWN CROPS
+function startSpawning(){
+    spawnInterval = setInterval(() => {
+        if(!gameRunning) return;
+
+        let cropData = crops[Math.floor(Math.random()*crops.length)];
+
+        let crop = document.createElement("div");
+        crop.classList.add("crop");
+
+        let x = Math.random() * 560;
+        let y = Math.random() * 360;
+
+        crop.style.left = x + "px";
+        crop.style.top = y + "px";
+        crop.innerHTML = "🌱";
+
+        gameArea.appendChild(crop);
+
+        setTimeout(() => {
+            crop.innerHTML = cropData.icon;
+        }, 1000);
+
+        crop.onclick = (e) => {
+            e.stopPropagation();
+            if(!gameRunning) return;
+
+            score++;
+            money += cropData.value;
+
+            document.getElementById("score").innerText = "Score: " + score;
+            document.getElementById("money").innerText = "Money: " + money + " 💰";
+
+            crop.remove();
+        };
+
+    }, spawnSpeed);
+}
+
+// CHARACTER MOVEMENT
+document.addEventListener("keydown", (e) => {
+    let step = 20;
+
+    let top = farmer.offsetTop;
+    let left = farmer.offsetLeft;
+
+    if(e.key === "ArrowUp") farmer.style.top = (top - step) + "px";
+    if(e.key === "ArrowDown") farmer.style.top = (top + step) + "px";
+    if(e.key === "ArrowLeft") farmer.style.left = (left - step) + "px";
+    if(e.key === "ArrowRight") farmer.style.left = (left + step) + "px";
+});
+
+// RESTART
+restartBtn.onclick = () => {
+    location.reload();
+};
+</script>
+
+</body>
+</html>

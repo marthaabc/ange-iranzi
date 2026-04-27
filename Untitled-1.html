@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AgroMarket FULL SYSTEM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{margin:0;font-family:Arial;background:#f5f5f5;transition:.3s}
+body.dark{background:#111;color:#fff}
+
+header{
+  background:#1b5e20;color:#fff;
+  display:flex;justify-content:space-between;
+  padding:10px;align-items:center
+}
+
+nav a{color:#fff;margin:0 10px;text-decoration:none}
+.menu{display:none;cursor:pointer}
+
+.container{padding:20px}
+.hidden{display:none}
+
+/* PRODUCTS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;
+}
+
+.card{
+  background:#fff;padding:10px;border-radius:10px
+}
+body.dark .card{background:#1e1e1e}
+
+.card img{width:100%;height:130px;object-fit:cover}
+
+/* BUTTONS */
+button{padding:6px 10px;border:none;border-radius:5px;cursor:pointer}
+.btn{background:#2e7d32;color:#fff}
+
+/* MODAL */
+.modal{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.5);
+  display:none;justify-content:center;align-items:center
+}
+.box{background:#fff;padding:20px;border-radius:10px}
+body.dark .box{background:#1e1e1e}
+
+/* CART */
+.cart{
+  position:fixed;right:0;top:0;width:280px;height:100%;
+  background:#fff;display:none;padding:10px;overflow:auto
+}
+body.dark .cart{background:#1e1e1e}
+
+@media(max-width:700px){
+ nav{display:none}
+ nav.show{display:block}
+ .menu{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div><b>🌿 AgroMarket</b></div>
+
+  <div class="menu" onclick="toggleMenu()">☰</div>
+
+  <nav id="nav">
+    <a href="#" onclick="showHome()">Home</a>
+    <a href="#" onclick="openLogin()">Login</a>
+    <a href="#" onclick="openFarmer()">Farmer</a>
+    <a href="#" onclick="openAdmin()">Admin</a>
+  </nav>
+
+  <button onclick="toggleDark()">🌙</button>
+  <button onclick="toggleCart()">🛒</button>
+</header>
+
+<!-- HOME -->
+<div class="container" id="home">
+  <h2>Products</h2>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- FARMER DASHBOARD -->
+<div class="container hidden" id="farmer">
+  <h2>Farmer Dashboard</h2>
+
+  <input id="pname" placeholder="Name"><br><br>
+  <input id="pprice" placeholder="Price"><br><br>
+  <input id="ptype" placeholder="Type"><br><br>
+  <input id="pimg" placeholder="Image URL"><br><br>
+
+  <button onclick="addProduct()">Add Product</button>
+
+  <div id="myProducts"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="container hidden" id="admin">
+  <h2>Admin Dashboard</h2>
+  <div id="adminList"></div>
+</div>
+
+<!-- LOGIN -->
+<div class="modal" id="login">
+  <div class="box">
+    <h3>Login</h3>
+    <input id="email" placeholder="email"><br><br>
+    <input id="pass" type="password" placeholder="password"><br><br>
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+    <button onclick="closeLogin()">Close</button>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart" id="cart">
+  <h3>Cart</h3>
+  <div id="items"></div>
+  <h4>Total: <span id="total">0</span></h4>
+
+  <input id="phone" placeholder="MoMo number">
+  <button onclick="pay()">Pay</button>
+</div>
+
+<script type="module">
+
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { 
+getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* 🔴 PUT YOUR CONFIG HERE */
+const firebaseConfig = {
+ apiKey: "YOUR_KEY",
+ authDomain: "YOUR_PROJECT.firebaseapp.com",
+ projectId: "YOUR_PROJECT"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ================= DATA ================= */
+let products=[];
+let cart=[];
+
+/* ================= UI ================= */
+window.showHome=()=>{
+ home.classList.remove("hidden");
+ farmer.classList.add("hidden");
+ admin.classList.add("hidden");
+}
+
+window.toggleMenu=()=>{
+ nav.classList.toggle("show");
+}
+
+window.toggleDark=()=>{
+ document.body.classList.toggle("dark");
+}
+
+window.toggleCart=()=>{
+ cartBox.style.display = cartBox.style.display==="block"?"none":"block";
+}
+
+/* ================= LOGIN ================= */
+window.register=async()=>{
+ let user = await createUserWithEmailAndPassword(auth,email.value,pass.value);
+
+ await setDoc(doc(db,"users",user.user.uid),{
+  email:email.value,
+  role:"farmer"
+ });
+
+ alert("Account created");
+}
+
+window.login=async()=>{
+ let user = await signInWithEmailAndPassword(auth,email.value,pass.value);
+
+ let snap = await getDoc(doc(db,"users",user.user.uid));
+
+ let role = snap.data().role;
+
+ if(role==="admin") openAdmin();
+ else openFarmer();
+
+ closeLogin();
+}
+
+/* ================= FARMER ================= */
+window.addProduct=async()=>{
+ let user = auth.currentUser;
+
+ await addDoc(collection(db,"products"),{
+  name:pname.value,
+  price:+pprice.value,
+  type:ptype.value,
+  image:pimg.value,
+  owner:user.uid
+ });
+
+ loadProducts();
+}
+
+/* ================= LOAD PRODUCTS ================= */
+async function loadProducts(){
+ let snap = await getDocs(collection(db,"products"));
+ products=[];
+
+ snap.forEach(d=>products.push(d.data()));
+
+ render();
+ renderAdmin();
+ renderFarmer();
+}
+
+/* ================= RENDER ================= */
+function render(){
+ grid.innerHTML="";
+ products.forEach((p,i)=>{
+  grid.innerHTML+=`
+  <div class="card">
+   <img src="${p.image}">
+   <h3>${p.name}</h3>
+   <p>${p.price} RWF</p>
+   <button class="btn" onclick="add(${i})">Add</button>
+  </div>`;
+ });
+}
+
+/* FARMER PRODUCTS */
+function renderFarmer(){
+ myProducts.innerHTML="";
+ products.forEach(p=>{
+  if(auth.currentUser && p.owner===auth.currentUser.uid){
+   myProducts.innerHTML+=`<p>${p.name} - ${p.price}</p>`;
+  }
+ });
+}
+
+/* ADMIN */
+function renderAdmin(){
+ adminList.innerHTML="";
+ products.forEach(p=>{
+  adminList.innerHTML+=`<p>${p.name} - ${p.price}</p>`;
+ });
+}
+
+/* ================= CART ================= */
+window.add=(i)=>{
+ cart.push(products[i]);
+ update();
+}
+
+function update(){
+ let t=0;
+ items.innerHTML="";
+
+ cart.forEach((c,i)=>{
+  t+=c.price;
+  items.innerHTML+=`<p>${c.name} ${c.price}</p>`;
+ });
+
+ total.innerText=t;
+}
+
+/* ================= MOMO ================= */
+window.pay=()=>{
+ alert("MoMo request sent to "+phone.value);
+}
+
+/* ================= NAV ================= */
+window.openLogin=()=>login.style.display="flex";
+window.closeLogin=()=>login.style.display="none";
+
+window.openFarmer=()=>{
+ farmer.classList.remove("hidden");
+ home.classList.add("hidden");
+ admin.classList.add("hidden");
+}
+
+window.openAdmin=()=>{
+ admin.classList.remove("hidden");
+ home.classList.add("hidden");
+ farmer.classList.add("hidden");
+}
+
+/* INIT */
+loadProducts();
+
+</script>
+
+</body>
+</html>

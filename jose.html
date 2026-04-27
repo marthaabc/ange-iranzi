@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AgroMarket Rulindo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5;transition:.3s}
+body.dark{background:#111;color:#fff}
+
+header{
+  background:#1b5e20;color:#fff;
+  display:flex;justify-content:space-between;
+  align-items:center;padding:10px
+}
+
+nav a{color:#fff;margin:0 10px;text-decoration:none}
+
+.menu{display:none;cursor:pointer}
+
+.container{padding:20px}
+
+/* PRODUCTS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;
+}
+
+.card{
+  background:#fff;padding:10px;border-radius:10px
+}
+body.dark .card{background:#1e1e1e}
+
+.card img{width:100%;height:120px;object-fit:cover}
+
+/* BUTTON */
+button{padding:7px;border:none;border-radius:5px;cursor:pointer}
+.btn{background:#2e7d32;color:#fff}
+
+/* CART */
+.cart{
+  position:fixed;right:0;top:0;
+  width:280px;height:100%;
+  background:#fff;display:none;
+  padding:10px;overflow:auto
+}
+body.dark .cart{background:#1e1e1e}
+
+/* LOGIN */
+.modal{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,.5);
+  display:none;justify-content:center;align-items:center
+}
+.box{background:#fff;padding:20px;border-radius:10px}
+body.dark .box{background:#1e1e1e}
+
+@media(max-width:700px){
+ nav{display:none}
+ nav.show{display:block}
+ .menu{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div><b>🌿 AgroMarket</b></div>
+
+  <div class="menu" onclick="toggleMenu()">☰</div>
+
+  <nav id="nav">
+    <a href="#" onclick="show()">Home</a>
+    <a href="#" onclick="openLogin()">Login</a>
+    <a href="#" onclick="openAdmin()">Admin</a>
+  </nav>
+
+  <button onclick="toggleDark()">🌙</button>
+  <button onclick="toggleCart()">🛒</button>
+</header>
+
+<!-- PRODUCTS -->
+<div class="container">
+  <h2>Products</h2>
+
+  <input onkeyup="search(this.value)" placeholder="Search...">
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- CART -->
+<div class="cart" id="cart">
+  <h3>Cart</h3>
+  <div id="items"></div>
+  <h4>Total: <span id="total">0</span> RWF</h4>
+
+  <input id="phone" placeholder="Phone">
+  <button onclick="pay()">Pay with MoMo</button>
+</div>
+
+<!-- LOGIN -->
+<div class="modal" id="login">
+  <div class="box">
+    <h3>Login</h3>
+    <input id="user" placeholder="username"><br><br>
+    <input id="pass" type="password" placeholder="password"><br><br>
+    <button onclick="login()">Login</button>
+    <button onclick="closeLogin()">Close</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="modal" id="admin">
+  <div class="box">
+    <h3>Admin Dashboard</h3>
+
+    <input id="name" placeholder="Product name"><br><br>
+    <input id="price" placeholder="Price"><br><br>
+
+    <button onclick="addProduct()">Add Product</button>
+    <button onclick="closeAdmin()">Close</button>
+  </div>
+</div>
+
+<script>
+
+let products=[
+ {n:"Tomatoes",p:500},
+ {n:"Bananas",p:300},
+ {n:"Carrots",p:400},
+ {n:"Potatoes",p:350},
+ {n:"Avocado",p:600},
+ {n:"Onions",p:450},
+ {n:"Mangoes",p:700},
+ {n:"Beans",p:800},
+ {n:"Pineapple",p:900},
+ {n:"Peppers",p:550},
+ {n:"Cabbage",p:300},
+ {n:"Sweet Potatoes",p:400}
+];
+
+let cart=[];
+
+/* RENDER */
+function render(list=products){
+ let g=document.getElementById("grid");
+ g.innerHTML="";
+
+ list.forEach((p,i)=>{
+  g.innerHTML+=`
+  <div class="card">
+    <img src="https://source.unsplash.com/300x200/?${p.n}">
+    <h3>${p.n}</h3>
+    <p>${p.p} RWF</p>
+    <button class="btn" onclick="add(${i})">Add</button>
+  </div>`;
+ });
+}
+render();
+
+/* CART */
+function add(i){
+ cart.push(products[i]);
+ update();
+}
+
+function update(){
+ let d=document.getElementById("items");
+ let t=0;
+ d.innerHTML="";
+
+ cart.forEach((c,i)=>{
+  t+=c.p;
+  d.innerHTML+=`
+  <p>${c.n} ${c.p}
+  <button onclick="remove(${i})">X</button></p>`;
+ });
+
+ document.getElementById("total").innerText=t;
+}
+
+function remove(i){
+ cart.splice(i,1);
+ update();
+}
+
+/* SEARCH */
+function search(v){
+ let f=products.filter(p=>p.n.toLowerCase().includes(v.toLowerCase()));
+ render(f);
+}
+
+/* DARK */
+function toggleDark(){
+ document.body.classList.toggle("dark");
+}
+
+/* MENU */
+function toggleMenu(){
+ document.getElementById("nav").classList.toggle("show");
+}
+
+/* CART */
+function toggleCart(){
+ let c=document.getElementById("cart");
+ c.style.display=c.style.display==="block"?"none":"block";
+}
+
+/* LOGIN */
+function openLogin(){login.style.display="flex"}
+function closeLogin(){login.style.display="none"}
+
+function login(){
+ alert("Login success (demo)");
+ closeLogin();
+}
+
+/* ADMIN */
+function openAdmin(){admin.style.display="flex"}
+function closeAdmin(){admin.style.display="none"}
+
+function addProduct(){
+ products.push({
+  n:name.value,
+  p:+price.value
+ });
+ render();
+ closeAdmin();
+}
+
+/* MOMO (SIMULATION) */
+function pay(){
+ alert("MoMo request sent to "+phone.value);
+}
+
+</script>
+
+</body>
+</html>

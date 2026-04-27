@@ -1,0 +1,195 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agro Market</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f4f4f4;
+}
+
+header {
+  background: green;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+nav a {
+  color: white;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 50px;
+  background: lightgreen;
+}
+
+.product-list {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.product {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 200px;
+}
+
+button {
+  background: green;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+#cart {
+  background: white;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>Agro Market</h1>
+  
+  <nav>
+    
+  <div class="logo">
+    <img src="MEDIA.PNG" alt="Logo">
+    <h1>AgroMarket Rulindo</h1>
+  </div>
+    <ul>
+    <li><a href="idex.html">Home</a></li>
+    <li><a href="MARTHA.HTML">Products</a></li>
+    <li><a href="ANGE.html">About</a></li>
+    <li><a href="NATHAN.HTML">Contact</a></li>
+     <li><a href="NATHAN.HTML">cart</a></li>
+  </ul>
+</header>
+
+<section class="hero">
+  <h2>Fresh Products from Farmers</h2>
+  <button onclick="scrollToProducts()">Shop Now</button>
+</section>
+
+<section id="products">
+  <h2 style="text-align:center;">Products</h2>
+  <div class="product-list" id="product-list"></div>
+</section>
+
+<section id="cart">
+  <h2>Your Cart</h2>
+  <div id="cart-items"></div>
+  <h3>Total: <span id="total">0</span> RWF</h3>
+
+  <h3>Checkout</h3>
+  <input type="text" id="name" placeholder="Your Name"><br><br>
+  <input type="text" id="phone" placeholder="Phone Number"><br><br>
+  <input type="text" id="address" placeholder="Address"><br><br>
+
+  <button onclick="checkout()">Place Order</button>
+</section>
+
+<script>
+let products = [
+  { id: 1, name: "Potatoes", price: 500 },
+  { id: 2, name: "Tomatoes", price: 800 },
+  { id: 3, name: "Beans", price: 700 }
+];
+
+let cart = [];
+
+function displayProducts() {
+  let container = document.getElementById("product-list");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <p>${p.price} RWF</p>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+function addToCart(id) {
+  let product = products.find(p => p.id === id);
+  cart.push(product);
+  updateCart();
+}
+
+function updateCart() {
+  document.getElementById("cart-count").innerText = cart.length;
+
+  let cartItems = document.getElementById("cart-items");
+  cartItems.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach(item => {
+    cartItems.innerHTML += `<p>${item.name} - ${item.price} RWF</p>`;
+    total += item.price;
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+function checkout() {
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let address = document.getElementById("address").value;
+
+  if (!name || !phone || !address) {
+    alert("Fill all fields!");
+    return;
+  }
+
+  let order = {
+    customer: name,
+    phone: phone,
+    address: address,
+    items: cart,
+    total: document.getElementById("total").innerText
+  };
+
+  localStorage.setItem("order", JSON.stringify(order));
+
+  alert("Order placed successfully!");
+
+  cart = [];
+  updateCart();
+
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("address").value = "";
+}
+
+function scrollToProducts() {
+  document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+}
+
+displayProducts();
+</script>
+
+</body>
+</html>
+```

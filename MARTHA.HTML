@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AgroMarket Products</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+  background:#111;
+  color:white;
+}
+
+/* HEADER */
+header{
+  background:black;
+  padding:15px;
+  text-align:center;
+}
+
+/* HERO FULL IMAGE */
+.hero{
+  height:100vh;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+
+  background-image: url("images/market.jpg"); /* 🔴 HINDURA IRI ZINA */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  position:relative;
+}
+
+/* DARK OVERLAY */
+.hero::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+}
+
+.hero-content{
+  position:relative;
+  z-index:1;
+}
+
+.hero h1{
+  font-size:50px;
+}
+
+.hero p{
+  font-size:20px;
+  margin:10px 0;
+}
+
+.hero button{
+  padding:12px 30px;
+  background:#00ff99;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:20px;
+  padding:20px;
+}
+
+/* CARD */
+.card{
+  background:white;
+  color:black;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+button{
+  background:#00ff99;
+  border:none;
+  padding:10px;
+  margin-top:5px;
+  cursor:pointer;
+  width:100%;
+}
+
+/* CART */
+#cartBox{
+  background:#222;
+  padding:20px;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr;}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🛒 AgroMarket Products</h2>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Welcome to AgroMarket Rulindo</h1>
+    <p>Fresh products from farmers</p>
+    <button onclick="document.querySelector('.grid').scrollIntoView({behavior:'smooth'})">
+      Shop Now
+    </button>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<div class="grid">
+
+  <div class="card">
+    <img src="ss.jpg">
+    <h3>Sweet Potatoes</h3>
+    <p>600 RWF/kg</p>
+    <button onclick="addToCart('Sweet Potatoes',600)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="mm.jpg">
+    <h3>Mangoes</h3>
+    <p>2000 RWF/kg</p>
+    <button onclick="addToCart('Mangoes',500)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="aa.jpg">
+    <h3>Avocado</h3>
+    <p>500 RWF/kg</p>
+    <button onclick="addToCart('Avocado',700)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="uu.jpg">
+    <h3>Eggs</h3>
+    <p>900 RWF/kg</p>
+    <button onclick="addToCart('Eggs',900)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="cc.jfif">
+    <h3>Carrot</h3>
+    <p>1200 RWF/kg</p>
+    <button onclick="addToCart('Carrot',400)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="rr.jfif">
+    <h3>Cassava</h3>
+    <p>600 RWF/kg</p>
+    <button onclick="addToCart('Cassava',450)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="tt.jfif">
+    <h3>Irish Potatoes</h3>
+    <p>800 RWF/kg</p>
+    <button onclick="addToCart('Irish Potatoes',800)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="vv.jpg">
+    <h3>Watermelon</h3>
+    <p>3000 RWF/kg</p>
+    <button onclick="addToCart('Watermelon',300)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="rt.jfif">
+    <h3>Apple</h3>
+    <p>1000 RWF/kg</p>
+    <button onclick="addToCart('Apple',1000)">Add to Cart</button>
+  </div>
+
+</div>
+
+<!-- CART -->
+<section id="cartBox">
+  <h2>🛒 Cart</h2>
+  <ul id="cartList"></ul>
+  <h3>Total: <span id="total">0</span> RWF</h3>
+</section>
+
+<script>
+
+let cart=[];
+
+function addToCart(name,price){
+  cart.push({name,price});
+  updateCart();
+}
+
+function updateCart(){
+  let list=document.getElementById("cartList");
+  let total=0;
+
+  list.innerHTML="";
+
+  cart.forEach(item=>{
+    list.innerHTML+=`<li>${item.name} - ${item.price} RWF</li>`;
+    total+=item.price;
+  });
+
+  document.getElementById("total").innerText=total;
+}
+
+</script>
+
+</body>
+</html>

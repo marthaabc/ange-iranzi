@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact - AgroMarket Rulindo</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* NAV */
+    nav {
+      background: black;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+    }
+
+    nav a:hover {
+      color: #00ff99;
+    }
+
+    /* CONTACT SECTION */
+    .contact {
+      max-width: 800px;
+      margin: 50px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .contact h1 {
+      text-align: center;
+      color: #00aa66;
+      margin-bottom: 20px;
+    }
+
+    .contact p {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px;
+      background: #00ff99;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: black;
+      color: white;
+    }
+
+    .info {
+      margin-top: 20px;
+      text-align: center;
+      color: #444;
+    }
+
+    footer {
+      text-align: center;
+      background: black;
+      color: white;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div><strong>AgroMarket Rulindo</strong></div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <!-- CONTACT -->
+  <section class="contact">
+    <h1>Contact Us</h1>
+    <p>Twoherere ubutumwa, ikibazo cyangwa igitekerezo cyawe</p>
+
+    <form>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <input type="text" placeholder="Subject">
+      <textarea rows="5" placeholder="Your Message"></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+
+    <div class="info">
+      <p>📍 Rulindo District, Rwanda</p>
+      <p>📞 +250 788 123 456</p>
+      <p>📧 support@agromarketrulindo.com</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 AgroMarket Rulindo | Contact Page</p>
+  </footer>
+
+</body>
+</html>
